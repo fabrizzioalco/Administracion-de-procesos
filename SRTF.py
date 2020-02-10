@@ -4,10 +4,7 @@ import ganttChart as gantt
 import matplotlib.pyplot as plt
 from PIL import Image
 
-def randomColor():
-    rgn = [255, 0, 0]
-    random.suffle(rgn)
-    return tuple(rgn)
+
 
 # Declaring a figure "gnt"
 fig, gnt = plt.subplots()
@@ -38,14 +35,15 @@ numberOfProcess = int(input('Ingrese el numero de procesos: '))
 processesList = []
 
 for i in range(numberOfProcess):
-    arrival = input(f'Ingrese el tiempo de llegada de P{i + 1}:')
-    duration = input(f'Ingrese la duracion de P{i + 1}:')
+    arrival = int(input(f'Ingrese el tiempo de llegada de P{i + 1}:'))
+    duration = int(input(f'Ingrese la duracion de P{i + 1}:'))
     process = SRTF.Process(arrival, duration)
     processesList.append(process)
 
 sumDuration = 0
 for processes in processesList:
-    sumDuration = processes.duration
+    sumDuration += processes.duration
+print(sumDuration)
 
 # copiamos la lista en otra para mejor organizacion.
 notArrivedProcesses = processesList.copy()
@@ -55,11 +53,9 @@ arrrivedProcesses = []
 
 # recorremos la lista de notArrivedProcesses.
 for i in range(sumDuration):
-
-
     for processes in notArrivedProcesses:
         if processes.arrival == i:
-            processes.setColor(randomColor())
+            # processes.setColor(randomColor())
             arrrivedProcesses.append(processes)
 
             # When we insert in arrived processes, we need to remove it
@@ -84,10 +80,12 @@ for i in range(sumDuration):
 
 def promWaitingTime():
     waitingTimeSum =  0
-
     for processes in processesList:
         waitingTimeSum += processes.getWaitingTime()
-    print(waitingTimeSum)
+        print(processes.getWaitingTime())
+    print('Waiting time' + str(waitingTimeSum))
+    return waitingTimeSum/numberOfProcess
+print(promWaitingTime())
 
 
 gnt.broken_barh([(10,9), (43, 43)], (10, 9), facecolors='tab:blue')
