@@ -9,7 +9,6 @@ def randomColor():
     random.suffle(rgn)
     return tuple(rgn)
 
-
 # Declaring a figure "gnt"
 fig, gnt = plt.subplots()
 
@@ -39,8 +38,8 @@ numberOfProcess = int(input('Ingrese el numero de procesos: '))
 processesList = []
 
 for i in range(numberOfProcess):
-    arrival = input(f'Ingrese el tiempo de llegada de P {i + 1}:')
-    duration = input(f'Ingrese la duracion de P {i + 1}')
+    arrival = input(f'Ingrese el tiempo de llegada de P{i + 1}:')
+    duration = input(f'Ingrese la duracion de P{i + 1}:')
     process = SRTF.Process(arrival, duration)
     processesList.append(process)
 
@@ -82,6 +81,14 @@ for i in range(sumDuration):
         if process is shorterProcess:
             continue
         process.waitingTime(1)
+
+def promWaitingTime():
+    waitingTimeSum =  0
+
+    for processes in processesList:
+        waitingTimeSum += processes.getWaitingTime()
+    print(waitingTimeSum)
+
 
 gnt.broken_barh([(10,9), (43, 43)], (10, 9), facecolors='tab:blue')
 plt.savefig("gantt1.png")
