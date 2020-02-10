@@ -1,48 +1,90 @@
-n = int(input('Enter no of processes: '))
-bt = [0] * (n + 1)
-at = [0] * (n + 1)
-abt = [0] * (n + 1)
-for i in range(n):
-	abt[i] = int(input('Enter the burst time for process {} : '.format(i + 1)))
-	at[i] = int(input('Enter the arrival time for process {} : '.format(i + 1)))
-	bt[i] = [abt[i], at[i], i]
+from random import random
+import SRTFClass as SRTF
+import ganttChart as gantt
+import matplotlib.pyplot as plt
+from PIL import Image
 
-#bt = [[7, 0, 7, 0], [5, 1, 5, 1], [3, 2, 3, 2], [1, 3, 1, 3], [2, 4, 2, 4], [1, 5, 1, 5]]
-#at = [0, 1, 2, 3, 4, 5]
-bt.pop(-1)
-print(abt)
-print(bt)
-sumbt = 0
-i = 0
-ll = []
-for i in range(0, sum(abt)):
-	l = [j for j in bt  if j[1] <= i]
-	l.sort(key=lambda x: x[0])
-	print(l, l[0][2])
-	bt[bt.index(l[0])][0] -= 1
-	for k in bt:
-		if k[0] == 0:
-			t = bt.pop(bt.index(k))
-			ll.append([k, i + 1])
-print(ll)
-ct = [0] * (n + 1)
-tat = [0] * (n + 1)
-wt = [0] * (n + 1)
-for i in ll:
-	print(i, i[0], i[1], i[0][2])
-	ct[i[0][2]] = i[1]
-	#abt[i[0][3]] = i[0][2]
+def randomColor():
+    rgn = [255, 0, 0]
+    random.suffle(rgn)
+    return tuple(rgn)
 
-for i in range(len(ct)):
-	tat[i] = ct[i] - at[i]
-	wt[i] = tat[i] - abt[i]
-ct.pop(-1)
-wt.pop(-1)
-tat.pop(-1)
-abt.pop(-1)
-at.pop(-1)
-print('BT\tAT\tCT\tTAT\tWT')
-for i in range(len(ct)):
-	print("{}\t{}\t{}\t{}\t{}\n".format(abt[i], at[i], ct[i], tat[i], wt[i]))
-print('Average Waiting Time = ', sum(wt)/len(wt))
-print('Average Turnaround Time = ', sum(tat)/len(tat))
+
+# Declaring a figure "gnt"
+fig, gnt = plt.subplots()
+
+# size of the rectangles
+
+# Setting Y-axis limits
+gnt.set_ylim(0, 50)
+
+# Setting X-axis limits
+gnt.set_xlim(0, 160)
+
+# Setting labels for x-axis and y-axis
+gnt.set_xlabel('seconds since start')
+gnt.set_ylabel('Processor')
+
+# Setting ticks on y-axis
+gnt.set_yticks([15, 25, 35])
+# Labelling tickes of y-axis
+gnt.set_yticklabels(['1', '2', '3'])
+
+# Setting graph attribute
+gnt.grid(False)
+
+# Declaring multiple bars in at same level and same width
+
+numberOfProcess = int(input('Ingrese el numero de procesos: '))
+processesList = []
+
+for i in range(numberOfProcess):
+    arrival = input(f'Ingrese el tiempo de llegada de P {i + 1}:')
+    duration = input(f'Ingrese la duracion de P {i + 1}')
+    process = SRTF.Process(arrival, duration)
+    processesList.append(process)
+
+sumDuration = 0
+for processes in processesList:
+    sumDuration = processes.duration
+
+# copiamos la lista en otra para mejor organizacion.
+notArrivedProcesses = processesList.copy()
+
+# lista para almacenar los procesos que ya han estado corriendo
+arrrivedProcesses = []
+
+# recorremos la lista de notArrivedProcesses.
+for i in range(sumDuration):
+
+
+    for processes in notArrivedProcesses:
+        if processes.arrival == i:
+            processes.setColor(randomColor())
+            arrrivedProcesses.append(processes)
+
+            # When we insert in arrived processes, we need to remove it
+            notArrivedProcesses.remove(processes)
+
+    shorterTime = sumDuration
+    shorterProcess = None
+    for process in arrrivedProcesses:
+        if process.duration < shorterTime:
+            shorterTime = process.duration
+            shorterProcess = process
+
+    shorterProcess.reducedTime(1)
+
+    if shorterTime == 0:
+        arrrivedProcesses.remove(shorterProcess)
+
+    for process in arrrivedProcesses:
+        if process is shorterProcess:
+            continue
+        process.waitingTime(1)
+
+gnt.broken_barh([(10,9), (43, 43)], (10, 9), facecolors='tab:blue')
+plt.savefig("gantt1.png")
+
+img = Image.open("gantt1.png")
+img.show()
