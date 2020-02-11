@@ -1,8 +1,14 @@
 import random
 import SRTFClass as SRTF
 import ganttChart as gantt
+import matplotlib
 import matplotlib.pyplot as plt
 from PIL import Image
+import tkinter as tk
+from tkinter.font import Font
+from PIL import ImageTk, Image
+matplotlib.use("TkAgg")
+
 
 def generateRandomColor():
     r = random.random()
@@ -25,13 +31,14 @@ gnt.set_ylim(0, 10)
 
 
 # Setting labels for x-axis and y-axis
-gnt.set_xlabel('seconds since start')
+
+
 gnt.set_ylabel('Processor')
 
 # Setting ticks on y-axis
-gnt.set_yticks([15, 25, 35])
+gnt.set_yticks([15])
 # Labelling tickes of y-axis
-gnt.set_yticklabels(['1', '2', '3'])
+gnt.set_yticklabels(['1'])
 
 # Setting graph attribute
 gnt.grid(False)
@@ -68,7 +75,7 @@ for i in range(sumDuration):
             arrrivedProcesses.append(processes)
             # When we insert in arrived processes, we need to remove it
             notArrivedProcesses.remove(processes)
-    counter+=1
+    counter += 1
 
 
 
@@ -91,12 +98,6 @@ for i in range(sumDuration):
             continue
         process.waitingTime(1)
 
-
-
-
-
-
-
 def promWaitingTime():
     waitingTimeSum =  0
     for processes in processesList:
@@ -113,7 +114,19 @@ for process in processesList:
     print(process.getLapsedTime())
     gnt.broken_barh(process.getLapsedTime(), (10, 9), color=process.getColor())
 
-plt.savefig("gantt1.png")
+def crateGUI(image):
+    root = tk.Tk()
+    img = ImageTk.PhotoImage(Image.open('gantt1.png'))
+    img_panel = tk.Label(root, image=img)
+    img_panel.grid(column=1, row=0)
+    root.mainloop()
 
-img = Image.open("gantt1.png")
-img.show()
+
+
+
+plotImage='gantt_SRTF.png'
+plt.savefig("gantt_SRTF.png")
+crateGUI(plotImage)
+
+# img = Image.open("gantt1.png")
+# img.show()
