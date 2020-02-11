@@ -1,10 +1,17 @@
-from random import random
+import random
 import SRTFClass as SRTF
 import ganttChart as gantt
 import matplotlib.pyplot as plt
 from PIL import Image
 
+def generateRandomColor():
+    r = random.random()
+    g = random.random()
+    b = random.random()
+    alpha = 1.0
+    rgb = (r, g, b, alpha)
 
+    return rgb
 
 # Declaring a figure "gnt"
 fig, gnt = plt.subplots()
@@ -12,10 +19,10 @@ fig, gnt = plt.subplots()
 # size of the rectangles
 
 # Setting Y-axis limits
-gnt.set_ylim(0, 50)
+gnt.set_ylim(0, 10)
 
 # Setting X-axis limits
-gnt.set_xlim(0, 160)
+
 
 # Setting labels for x-axis and y-axis
 gnt.set_xlabel('seconds since start')
@@ -50,33 +57,45 @@ notArrivedProcesses = processesList.copy()
 
 # lista para almacenar los procesos que ya han estado corriendo
 arrrivedProcesses = []
+listaTuplas =[]
 
 # recorremos la lista de notArrivedProcesses.
+counter = 0
 for i in range(sumDuration):
     for processes in notArrivedProcesses:
         if processes.arrival == i:
-            # processes.setColor(randomColor())
+            processes.setColor(generateRandomColor())
             arrrivedProcesses.append(processes)
-
             # When we insert in arrived processes, we need to remove it
             notArrivedProcesses.remove(processes)
+    counter+=1
+
+
 
     shorterTime = sumDuration
     shorterProcess = None
     for process in arrrivedProcesses:
         if process.duration < shorterTime:
+            process.setLapsedTime(process.arrival, counter)
+            print(process.getLapsedTime())
             shorterTime = process.duration
             shorterProcess = process
 
     shorterProcess.reducedTime(1)
 
-    if shorterTime == 0:
+    if shorterProcess.duration == 0:
         arrrivedProcesses.remove(shorterProcess)
 
     for process in arrrivedProcesses:
         if process is shorterProcess:
             continue
         process.waitingTime(1)
+
+
+
+
+
+
 
 def promWaitingTime():
     waitingTimeSum =  0
@@ -88,7 +107,12 @@ def promWaitingTime():
 print(promWaitingTime())
 
 
-gnt.broken_barh([(10,9), (43, 43)], (10, 9), facecolors='tab:blue')
+
+gnt.set_xlim(0, sumDuration)
+for process in processesList:
+    print(process.getLapsedTime())
+    gnt.broken_barh(process.getLapsedTime(), (10, 9), color=process.getColor())
+
 plt.savefig("gantt1.png")
 
 img = Image.open("gantt1.png")

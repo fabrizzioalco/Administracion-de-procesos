@@ -6,6 +6,7 @@ class Process:
         self.arrival = arrival
         self.duration = duration
         self.waiting = 0
+        self.lapsedtime =[]
         self.numeroProceso = Process.number
         self.color = None
         Process.number += 1
@@ -26,6 +27,11 @@ class Process:
     def getWaitingTime(self):
         return self.waiting
 
+    def setLapsedTime(self, time, duration):
+        self.lapsedtime.append((time, duration))
+
+    def getLapsedTime(self):
+        return self.lapsedtime
 
     def setColor(self, color):
         self.color = color
